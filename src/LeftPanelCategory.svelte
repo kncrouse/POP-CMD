@@ -1,10 +1,11 @@
 <script>
     export let heading;
     export let headingColor;
+    export let categoryIncluded = false;
     let isOpen = false;
 </script>
 
-<button class:active={isOpen} class="accordion" on:click={() => isOpen = !isOpen} style:background-color={headingColor}>
+<button class:active={isOpen} class:unused={!categoryIncluded} class="accordion" on:click={() => isOpen = !isOpen} style:background-color={headingColor}>
     <span class="heading">{heading}</span>
 
     {#if isOpen}
@@ -16,7 +17,7 @@
 </button>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="panel" class:open-panel={isOpen} style="justify-content: normal;" on:click|preventDefault>
+<div class="panel" class:open-panel={isOpen} style="align-items:left;" on:click|preventDefault>
     <slot></slot>
 </div>
 
@@ -28,7 +29,7 @@
         margin: 0;
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: left;
         text-align: left;
         background-color: #eee;
         color: #444;
@@ -54,7 +55,11 @@
     }
 
     .open-panel {
-        height: 170px;
+        height:fit-content;
+    }
+
+    .unused {
+        opacity: 0.5;
     }
 
 </style>
