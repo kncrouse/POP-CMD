@@ -25,6 +25,7 @@
     const handleDelete = (id) => {
         dispatch('deleteItem', id)
     }
+
 </script>
 
 

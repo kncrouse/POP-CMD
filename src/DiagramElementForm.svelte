@@ -33,12 +33,12 @@
 </script>
 
 
-<form style="align-items:center; margin:10px; justify-content:center; ">
+<form style="align-items:center; margin:10px; justify-content:center; " >
 
     {#each diagramElements as element}
-        <div style="display:flex; height:100%; width: 100%">
+        <div style="display:flex; height:100%; width: 100%" >
             <p>{element.firstElement} -- {element.elementConnection} --> {element.secondElement}</p>
-            <button on:click={() => {handleDelete(element.id)}}>X</button>
+            <button on:click|preventDefault={() => {handleDelete(element.id)}}>X</button>
         </div>
     {/each}
 
@@ -53,6 +53,7 @@
             {#each actionElements as element}
                 <option value={element.name}>{element.name}</option>  
             {/each}
+            <option>    </option> ; option for blank text
 		</select>
         <p>--></p>
         <select bind:value={secondElement} style="min-width: 200;" placeholder="Life History">
