@@ -3,19 +3,27 @@
 	import LeftPanelCategory from "./LeftPanelCategory.svelte";
 	import AddItemForm from "./AddItemForm.svelte";
 	import SelectItemForm from "./SelectItemForm.svelte";
-	import { each, update_await_block_branch } from "svelte/internal";
+	import { each, select_options, update_await_block_branch } from "svelte/internal";
 	import Tabs from "./Tabs.svelte";
 	import DiagramElementForm from "./DiagramElementForm.svelte";
+	import MultiSelect from 'svelte-multiselect'
+	// import Tooltip from './Tooltip.svelte';
+	// import { tooltip } from './tooltip';
+	// import { tooltip as tooltipv1 } from './tooltip.v1';
 
 	let modelStructure;
 	let speciesDescription;
 	let environmentDescription;
 
-	$: actionElements = behaviors.concat(transitions, energetics);
+	let selectedChemicalImpacts;
+	let selectedDensityImpacts;
+	let selectedStochasticImpacts;
+
+	$: actionElements = transitions;
+	$: lifeElements = behaviors.concat(lifeHistories, energetics);
 	$: modelOutputs = abundances.concat(
 		bioMasses,
 		structures,
-		dynamics,
 		others
 	);
 
@@ -52,13 +60,11 @@
 	let abundancesIncluded = false;
 	let bioMassesIncluded = false;
 	let structuresIncluded = false;
-	let dynamicsIncluded = false;
 	let othersIncluded = false;
 
 	let abundances = [];
 	let bioMasses = [];
 	let structures = [];
-	let dynamics = [];
 	let others = [];
 
 	// TABS
@@ -87,13 +93,14 @@
 	let tabChange = (e) => {
 		currentItem = e.detail;
 
-		if (currentItem === "Show Diagram") {
+		if (currentItem != "Edit Diagram") {
 			updateDiagram();
 		}
 	};
 
 	function updateDiagram() {
 		mermaidMarkdown = "flowchart TD \n";
+		let styleMarkdown = ""
 
 		let alphabet = [
 			"A",
@@ -122,7 +129,12 @@
 			let element = diagramElements[i];
 			let first = element.firstElement;
 			let second = element.secondElement;
+			let arrow = "-.-"
 			let connection = element.elementConnection;
+			let leftLeftBracket = '(["'
+			let rightLeftBracket = '"]) '
+			let leftRightBracket = '(["'
+			let rightRightBracket = '"]) '
 
 			let firstLetter;
 			let secondLetter;
@@ -153,21 +165,70 @@
 				console.log(secondLetter);
 			}
 
+			// UPDATE BOX STYLE
+			for (let i = 0; i < lifeHistories.length; i++) {
+				let lH = lifeHistories[i];
+				if (lH.name == first) {
+					leftLeftBracket = '["'
+					rightLeftBracket = '"] '
+				}
+				if (lH.name == second) {
+					leftRightBracket = '["'
+					rightRightBracket = '"] '
+				}
+			}
+
+			// UPDATE ARROW STTLE
+			if (leftLeftBracket == '["' && leftRightBracket == '["' ) {
+				arrow = '-->'
+			}
+
+			// UPDATE RED TEXT
+			if ( selectedChemicalImpacts.includes(first) ) {
+				styleMarkdown += 'style ' + firstLetter + ' color:red \n'
+			}
+			if ( selectedChemicalImpacts.includes(second) ) {
+				styleMarkdown += 'style ' + secondLetter + ' color:red \n'
+			}
+
+			// UPDATE UNDERLINED TEXT
+			if ( selectedDensityImpacts.includes(first) ) {
+				styleMarkdown += 'classDef underlined text-decoration: underline; class ' + firstLetter + ' underlined; \n'
+			}
+			if ( selectedDensityImpacts.includes(second) ) {
+				styleMarkdown += 'classDef underlined text-decoration: underline; class ' + secondLetter + ' underlined; \n'
+			}
+
+			// UPDATE ITALICS TEXT
+			if ( selectedStochasticImpacts.includes(first) ) {
+				styleMarkdown += 'classDef stochasticity font-style: italic; class ' + firstLetter + ' stochasticity; \n'
+			}
+			if ( selectedStochasticImpacts.includes(second) ) {
+				styleMarkdown += 'classDef stochasticity font-style: italic; class ' + secondLetter + ' stochasticity; \n'
+			}
+			
 			let newLine =
 				firstLetter +
-				'["' +
+				leftLeftBracket +
 				first +
-				'"] -->|"' +
+				rightLeftBracket + 
+				arrow +
+				'|"' +
 				connection +
 				'"| ' +
 				secondLetter +
-				'["' +
+				leftRightBracket +
 				second +
-				'"] \n';
+				rightRightBracket + 
+				' \n';
 			//console.log(newLine)
 
 			mermaidMarkdown += newLine;
 		}
+
+		mermaidMarkdown += styleMarkdown;
+
+
 	}
 
 	// ENVIRONMENT
@@ -294,15 +355,6 @@
 		structures = structures.filter((item) => item.id != e.detail);
 	};
 
-	const addDynamics = (e) => {
-		const item = e.detail;
-		dynamics = [...dynamics, item];
-	};
-
-	const deleteDynamics = (e) => {
-		dynamics = dynamics.filter((item) => item.id != e.detail);
-	};
-
 	const addOthers = (e) => {
 		const item = e.detail;
 		others = [...others, item];
@@ -327,12 +379,11 @@
 		stochasticIncluded = true;
 		lifeHistoriesIncluded = true;
 		transitionsIncluded = true;
-		behaviorsIncluded = true;
-		energeticsIncluded = true;
+		behaviorsIncluded = false;
+		energeticsIncluded = false;
 		abundancesIncluded = true;
 		bioMassesIncluded = false;
 		structuresIncluded = true;
-		dynamicsIncluded = true;
 		othersIncluded = true;
 
 		const driver1 = {
@@ -345,7 +396,13 @@
 			name: "Seasonally variable flood occurrence and duration",
 			id: Math.random(),
 		};
-		otherDrivers = [...otherDrivers, driver2];
+
+		const driver3 = {
+			name: "Shading from other vegetation",
+			id: Math.random(),
+		};
+
+		otherDrivers = [...otherDrivers, driver2, driver3];
 
 		const depend1 = {
 			name: "Intra-specific competition for light",
@@ -368,21 +425,17 @@
 			id: Math.random(),
 		};
 		const output3 = {
-			name: "Density over time",
+			name: "Total plant density",
 			id: Math.random(),
 		};
 		const output4 = {
 			name: "Years to quasi-extinction",
 			id: Math.random(),
 		};
-		const output5 = {
-			name: "Indirect effects from inter-specific competition",
-			id: Math.random(),
-		};
+
 		abundances = [...abundances, output1];
 		structures = [...structures, output2];
-		dynamics = [...dynamics, output3, output4];
-		others = [...others, output5];
+		others = [...others, output3, output4];
 
 		const lifehistory1 = {
 			name: "Seed load",
@@ -443,9 +496,12 @@
 			behavior3,
 			behavior5,
 			behavior7,
+			behavior6,
+			behavior2, 
+			behavior4,
 		];
-		behaviors = [...behaviors, behavior6];
-		energetics = [...energetics, behavior2, behavior4];
+		// behaviors = [...behaviors, ];
+		// energetics = [...energetics, ];
 
 		const item1 = {
 			firstElement: "Seedling",
@@ -519,20 +575,23 @@
 		transitionsIncluded = false;
 		behaviorsIncluded = true;
 		energeticsIncluded = false;
-		abundancesIncluded = false;
+		abundancesIncluded = true;
 		bioMassesIncluded = false;
-		structuresIncluded = false;
-		dynamicsIncluded = false;
+		structuresIncluded = true;
 		othersIncluded = false;
 
 		const driver1 = {
-			name: "Environmental concentration of chemical exposure",
+			name: "Chlorpyrifos exposure",
 			id: Math.random(),
 		};
 		chemicalDrivers = [...chemicalDrivers, driver1];
 
 		const driver2 = {
-			name: "Spacially explicit landscape of estuarine/freshwater spawning grounds",
+			name: "Habitat management",
+			id: Math.random(),
+		};
+		const driver5 = {
+			name: "Variation in habitat suitability",
 			id: Math.random(),
 		};
 		const driver3 = {
@@ -540,10 +599,10 @@
 			id: Math.random(),
 		};
 		const driver4 = {
-			name: "Seasonally varying demography",
+			name: "Seasonal variability",
 			id: Math.random(),
 		};
-		otherDrivers = [...otherDrivers, driver2, driver3, driver4];
+		otherDrivers = [...otherDrivers, driver2, driver5, driver3, driver4];
 
 		const depend1 = {
 			name: "Life-stage specific density dependence", 
@@ -558,11 +617,11 @@
 		stochasticEffects = [...stochasticEffects, stoch1];
 
 		const output1 = {
-			name: " ",
+			name: "Population abundance",
 			id: Math.random(),
 		};
 		const output2 = {
-			name: " ",
+			name: "Life stage distribution",
 			id: Math.random(),
 		};
 		const output3 = {
@@ -577,9 +636,9 @@
 			name: " ",
 			id: Math.random(),
 		};
-/* 		abundances = [...abundances, output1];
+		abundances = [...abundances, output1];
 		structures = [...structures, output2];
-		dynamics = [...dynamics, output3, output4];
+/* 		dynamics = [...dynamics, output3, output4];
 		others = [...others, output5]; */
 
 		const lifehistory1 = {
@@ -671,8 +730,14 @@
 		};
 		const item7 = {
 			firstElement: "Adult",
-			elementConnection: "Migration/dispersal",
+			elementConnection: "Survival",
 			secondElement: "Adult",
+			id: Math.random(),
+		};
+		const item8 = {
+			firstElement: "Adult",
+			elementConnection: " ",
+			secondElement: "Migration/dispersal",
 			id: Math.random(),
 		};
 		diagramElements = [
@@ -682,7 +747,7 @@
 			item7,
 			item4,
 			item5,
-
+			item8,
 		];
 
 		updateDiagram();
@@ -693,8 +758,8 @@
 		clearAll();
 
 		modelStructure = "agent-based model";
-		speciesDescription = "Hypomesus transpacificus";
-		environmentDescription = "Sacramento–San Joaquin Estuary";
+		speciesDescription = "Pimephales promelas";
+		environmentDescription = "North America";
 
 		chemicalDriversIncluded = true;
 		otherDriversIncluded = true;
@@ -704,20 +769,19 @@
 		transitionsIncluded = false;
 		behaviorsIncluded = false;
 		energeticsIncluded = false;
-		abundancesIncluded = false;
+		abundancesIncluded = true;
 		bioMassesIncluded = false;
-		structuresIncluded = false;
-		dynamicsIncluded = false;
+		structuresIncluded = true;
 		othersIncluded = false;
 
 		const driver1 = {
-			name: "Environmental concentration of chemical exposure",
+			name: "Chlorpyrifos exposure",
 			id: Math.random(),
 		};
 		chemicalDrivers = [...chemicalDrivers, driver1];
 
 		const driver4 = {
-			name: "Seasonally varying demography",
+			name: "Variability in juvenile overwinter survival",
 			id: Math.random(),
 		};
 		otherDrivers = [...otherDrivers, driver4];
@@ -735,11 +799,11 @@
 		stochasticEffects = [...stochasticEffects, stoch1]; */
 
 		const output1 = {
-			name: " ",
+			name: "Population abundance",
 			id: Math.random(),
 		};
 		const output2 = {
-			name: " ",
+			name: "Life stage distribution",
 			id: Math.random(),
 		};
 		const output3 = {
@@ -754,9 +818,9 @@
 			name: " ",
 			id: Math.random(),
 		};
-/* 		abundances = [...abundances, output1];
+		abundances = [...abundances, output1];
 		structures = [...structures, output2];
-		dynamics = [...dynamics, output3, output4];
+/* 		dynamics = [...dynamics, output3, output4];
 		others = [...others, output5]; */
 
 		const lifehistory1 = {
@@ -848,7 +912,7 @@
 		};
 		const item7 = {
 			firstElement: "Adult",
-			elementConnection: " ",
+			elementConnection: "Survival",
 			secondElement: "Adult",
 			id: Math.random(),
 		};
@@ -865,6 +929,11 @@
 		updateDiagram();
 		showNewDiagram();
 	};
+
+	const triggerDiagram = () => {
+		updateDiagram();
+		showNewDiagram();
+	}
 
 	async function showNewDiagram() {
 		let promise = Promise.resolve(10);
@@ -887,7 +956,6 @@
 		abundancesIncluded = false;
 		bioMassesIncluded = false;
 		structuresIncluded = false;
-		dynamicsIncluded = false;
 		othersIncluded = false;
 		chemicalDrivers = [];
 		otherDrivers = [];
@@ -902,11 +970,45 @@
 		abundances = [];
 		bioMasses = [];
 		structures = [];
-		dynamics = [];
 		others = [];
+		selectedChemicalImpacts = [];
+		selectedDensityImpacts = [];
+		selectedStochasticImpacts = [];
 		updateDiagram();
 		showNewDiagram();
 	};
+
+	const generatePDF = () => {
+
+		let makepdf = document.getElementById("parent")
+		let mywindow = window.open("", "PRINT","height=400,width=600");
+ 
+        mywindow.document.write(makepdf.innerHTML);
+ 
+        // mywindow.document.close();
+        // mywindow.focus();
+ 
+        // mywindow.print();
+        // mywindow.close();
+ 
+        // return true;
+
+		//let makepdf = document.getElementById("parent")
+		// let mywindow = window.open("", "PRINT","height=400,width=600");
+ 
+        // mywindow.document.write(makepdf);
+ 
+        // mywindow.document.close();
+       // makepdf.focus();
+ 
+        //makepdf.print();
+        //makepdf.close();
+ 
+       // return true;
+
+	}
+
+
 </script>
 
 <!-- svelte-ignore non-top-level-reactive-declaration -->
@@ -916,35 +1018,10 @@
 	<div
 		style="display:flex; height:100%; width:100%; border:solid 0px black; justify-content:center; align-items:center; "
 	>
-		<!-- svelte-ignore a11y-label-has-associated-control -->
-		<label style="margin: 5px">What is the model structure?</label>
-		<select style="margin: 10px" bind:value={modelStructure}>
-			<option value="unstructured">unstructured</option>
-			<option value="structured/matrix">structured/matrix</option>
-			<option value="agent-based model">agent-based model</option>
-		</select>
-
-		<input
-			style="width: 250px; margin: 10px; font-style: italic"
-			type="text"
-			placeholder="What is the species modeled?"
-			bind:value={speciesDescription}
-		/><br />
-		<input
-			style="width: 250px; margin: 10px"
-			type="text"
-			placeholder="What is the environment?"
-			bind:value={environmentDescription}
-		/><br />
-	</div>
-
-	<div
-		style="display:flex; height:100%; width:100%; border:solid 0px black; justify-content:center; align-items:center; "
-	>
 		<button
 			style="color:olivedrab; margin: 10px; border-color:lightgray"
-			on:click={showExample1}><em>Boltonia decurrens</em></button
-		>
+			on:click={showExample1}><em>Boltonia decurrens</em>
+		</button>
 		<button
 			style="color:olivedrab; margin: 10px; border-color:lightgray"
 			on:click={showExample2}>Delta Smelt</button
@@ -957,6 +1034,39 @@
 			style="color:darkred; margin: 10px; border-color:lightgray"
 			on:click={clearAll}>Clear All</button
 		>
+		<button
+			style="color:grey; margin: 10px; border-color:lightgray"
+			on:click={generatePDF}>Generate PDF</button
+		>
+	</div>
+
+	<div 
+		style="font-size:14px; display:flex; height:100%; width:100%; border:solid 0px black; justify-content:center; align-items:center; "
+	>
+		<!-- svelte-ignore a11y-label-has-associated-control -->
+		<label style="margin: 5px">Species modeled:</label>
+		<input
+			style="width: 250px; margin: 10px; font-style: italic"
+			type="text"
+			placeholder="Species"
+			bind:value={speciesDescription}
+		/><br />
+		<!-- svelte-ignore a11y-label-has-associated-control -->
+		<label style="margin: 5px">Modeled environment:</label>
+		<input
+			style="width: 250px; margin: 10px"
+			type="text"
+			placeholder="Environment"
+			bind:value={environmentDescription}
+		/><br />
+		<!-- svelte-ignore a11y-label-has-associated-control -->
+		<label style="margin: 5px">Model structure:</label>
+		<select style="margin: 10px" bind:value={modelStructure} placeholder="Structure">
+			<option value="conceptual only">conceptual only</option>
+			<option value="unstructured">unstructured</option>
+			<option value="structured/matrix">structured/matrix</option>
+			<option value="agent-based model">agent-based model</option>
+		</select>
 	</div>
 
 	<div id="parent" style="display:flex; height:100%; border:solid 1px black">
@@ -974,6 +1084,10 @@
 				headingColor="#569e3a"
 				categoryIncluded={chemicalDriversIncluded}
 			>
+				<MultiSelect options={lifeElements.map((x) => x.name)} 
+					bind:selected={selectedChemicalImpacts} 
+					on:change={triggerDiagram}/>
+
 				<AddItemForm
 					questionChecked={chemicalDriversIncluded}
 					questionText="Does the model include external drivers?"
@@ -1092,6 +1206,10 @@
 				headingColor="#d99116"
 				categoryIncluded={dependenciesIncluded}
 			>
+				<MultiSelect options={lifeElements.map((x) => x.name)} 
+					bind:selected={selectedDensityImpacts} 
+					on:change={triggerDiagram}/>
+
 				<AddItemForm
 					questionChecked={dependenciesIncluded}
 					questionText="Does the model include density dependence?"
@@ -1109,6 +1227,10 @@
 				headingColor="#d99116"
 				categoryIncluded={stochasticIncluded}
 			>
+				<MultiSelect options={lifeElements.map((x) => x.name)} 
+					bind:selected={selectedStochasticImpacts} 
+					on:change={triggerDiagram}/>
+
 				<AddItemForm
 					questionChecked={stochasticIncluded}
 					questionText="Does the model include stochasticity?"
@@ -1177,23 +1299,6 @@
 					on:handleClick={() =>
 						(structuresIncluded = !structuresIncluded)}
 					items={structures}
-				/>
-			</LeftPanelCategory>
-
-			<LeftPanelCategory
-				heading="Dynamics"
-				headingColor="#4180ad"
-				categoryIncluded={dynamicsIncluded}
-			>
-				<AddItemForm
-					questionChecked={dynamicsIncluded}
-					questionText="Does the model include dynamic outputs?"
-					placeholderText="New dynamic output"
-					on:addItem={addDynamics}
-					on:deleteItem={deleteDynamics}
-					on:handleClick={() =>
-						(dynamicsIncluded = !dynamicsIncluded)}
-					items={dynamics}
 				/>
 			</LeftPanelCategory>
 
@@ -1329,7 +1434,7 @@
 					<DiagramElementForm
 						{diagramElements}
 						{actionElements}
-						lifehistoryElements={lifeHistories}
+						lifehistoryElements={lifeElements}
 						on:addItem={addDiagramElement}
 						on:deleteItem={deleteDiagramElement}
 					/>
@@ -1397,26 +1502,6 @@
 						style="background-color: #3653be; width: 100%"
 					>
 						<p style="font-size: 8;">Structure</p>
-						<p style="align: center; color: white">
-							{output.name}
-						</p>
-					</div>
-				</div>
-			{/each}
-			{#each dynamics as output (output.id)}
-				<div
-					style="display:flex; width: 280px; align-items:center; margin: 10px"
-				>
-					<img
-						src="images/right-arrow.png"
-						alt="Loading..."
-						style="height: 40px; fill: grey"
-					/>
-					<div
-						class="background"
-						style="background-color: #3653be; width: 100%"
-					>
-						<p style="font-size: 8;">Dynamics</p>
 						<p style="align: center; color: white">
 							{output.name}
 						</p>
