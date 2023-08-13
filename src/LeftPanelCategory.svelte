@@ -24,7 +24,7 @@
 <style>
     /* Style the buttons that are used to open and close the accordion panel */
     .accordion {
-        width: 100%;
+        width: 270px;
         padding: 15px;
         margin: 0;
         display: flex;
@@ -47,7 +47,7 @@
 
     /* Style the accordion panel. Note: hidden by default */
     .panel {
-        padding: 0 18px;
+        padding: 0 5px;
         background-color: white;
         display: block;
         height: 0;
@@ -56,6 +56,7 @@
 
     .open-panel {
         height:fit-content;
+        padding: 5px;
     }
 
     .unused {

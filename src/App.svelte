@@ -29,18 +29,10 @@
 
 	// ENVIRONMENT
 
-	let chemicalDriversIncluded = false;
-	let otherDriversIncluded = false;
-
 	let chemicalDrivers = [];
 	let otherDrivers = [];
 
 	// POPULATION
-
-	let lifeHistoriesIncluded = false;
-	let transitionsIncluded = false;
-	let behaviorsIncluded = false;
-	let energeticsIncluded = false;
 
 	let lifeHistories = [];
 	let transitions = [];
@@ -49,18 +41,10 @@
 
 	// OTHER MODEL FEATURES
 
-	let dependenciesIncluded = false;
-	let stochasticIncluded = false;
-
 	let densityDependencies = [];
 	let stochasticEffects = [];
 
 	// MODEL OUTPUTS
-
-	let abundancesIncluded = false;
-	let bioMassesIncluded = false;
-	let structuresIncluded = false;
-	let othersIncluded = false;
 
 	let abundances = [];
 	let bioMasses = [];
@@ -69,7 +53,7 @@
 
 	// TABS
 
-	let tabItems = ["Show Diagram", "Edit Diagram"];
+	let tabItems = ["Show Diagram", "Edit Diagram", "Markdown Text"];
 	let currentItem = "Show Diagram";
 
 	// MERMAID
@@ -272,7 +256,10 @@
 
 	const deleteLifeHistories = (e) => {
 		lifeHistories = lifeHistories.filter((item) => item.id != e.detail);
-		// remove lH connections
+		// thisLH = lifeHistories.filter((item) => item.id == e.detail)[0];
+
+		// diagramElements = diagramElements.filter((item) => item.firstElement != thisLH.name);
+		// diagramElements = diagramElements.filter((item) => item.secondElement != thisLH.name);
 	};
 
 	const addTransitions = (e) => {
@@ -372,19 +359,6 @@
 		modelStructure = "agent-based model";
 		speciesDescription = "Boltonia decurrens";
 		environmentDescription = "Illinois River Floodplain";
-
-		chemicalDriversIncluded = true;
-		otherDriversIncluded = true;
-		dependenciesIncluded = true;
-		stochasticIncluded = true;
-		lifeHistoriesIncluded = true;
-		transitionsIncluded = true;
-		behaviorsIncluded = false;
-		energeticsIncluded = false;
-		abundancesIncluded = true;
-		bioMassesIncluded = false;
-		structuresIncluded = true;
-		othersIncluded = true;
 
 		const driver1 = {
 			name: "Chemical exposure: spatial gradient",
@@ -567,19 +541,6 @@
 		speciesDescription = "Hypomesus transpacificus";
 		environmentDescription = "Sacramento–San Joaquin Estuary";
 
-		chemicalDriversIncluded = true;
-		otherDriversIncluded = true;
-		dependenciesIncluded = true;
-		stochasticIncluded = true;
-		lifeHistoriesIncluded = true;
-		transitionsIncluded = false;
-		behaviorsIncluded = true;
-		energeticsIncluded = false;
-		abundancesIncluded = true;
-		bioMassesIncluded = false;
-		structuresIncluded = true;
-		othersIncluded = false;
-
 		const driver1 = {
 			name: "Chlorpyrifos exposure",
 			id: Math.random(),
@@ -761,19 +722,6 @@
 		speciesDescription = "Pimephales promelas";
 		environmentDescription = "North America";
 
-		chemicalDriversIncluded = true;
-		otherDriversIncluded = true;
-		dependenciesIncluded = false;
-		stochasticIncluded = false;
-		lifeHistoriesIncluded = true;
-		transitionsIncluded = false;
-		behaviorsIncluded = false;
-		energeticsIncluded = false;
-		abundancesIncluded = true;
-		bioMassesIncluded = false;
-		structuresIncluded = true;
-		othersIncluded = false;
-
 		const driver1 = {
 			name: "Chlorpyrifos exposure",
 			id: Math.random(),
@@ -945,18 +893,6 @@
 		modelStructure = "";
 		speciesDescription = "";
 		environmentDescription = "";
-		chemicalDriversIncluded = false;
-		otherDriversIncluded = false;
-		dependenciesIncluded = false;
-		stochasticIncluded = false;
-		lifeHistoriesIncluded = false;
-		transitionsIncluded = false;
-		behaviorsIncluded = false;
-		energeticsIncluded = false;
-		abundancesIncluded = false;
-		bioMassesIncluded = false;
-		structuresIncluded = false;
-		othersIncluded = false;
 		chemicalDrivers = [];
 		otherDrivers = [];
 		densityDependencies = [];
@@ -978,38 +914,29 @@
 		showNewDiagram();
 	};
 
-	const generatePDF = () => {
+	function generatePDF() {
 
-		let makepdf = document.getElementById("parent")
-		let mywindow = window.open("", "PRINT","height=400,width=600");
- 
-        mywindow.document.write(makepdf.innerHTML);
- 
-        // mywindow.document.close();
-        // mywindow.focus();
- 
-        // mywindow.print();
-        // mywindow.close();
- 
-        // return true;
-
-		//let makepdf = document.getElementById("parent")
-		// let mywindow = window.open("", "PRINT","height=400,width=600");
- 
-        // mywindow.document.write(makepdf);
- 
-        // mywindow.document.close();
-       // makepdf.focus();
- 
-        //makepdf.print();
-        //makepdf.close();
- 
-       // return true;
+        // Choose the element id which you want to export.
+        var element = document.getElementById('parent');
+        element.style.width = '1200px';
+        element.style.height = '800px';
+        var opt = {
+            margin:       0.25,
+            filename:     'myCMD.pdf',
+            image:        { type: 'pdf', quality: 10 },
+            html2canvas:  { scale: 1 },
+            jsPDF:        { unit: 'in', format: [13.5,9], orientation: 'landscape', precision: '12' }
+          };
+        
+        // choose the element and pass it to html2pdf() function and call the save() on it to save as pdf.
+        html2pdf().set(opt).from(element).save();
 
 	}
 
-
 </script>
+
+
+
 
 <!-- svelte-ignore non-top-level-reactive-declaration -->
 <main>
@@ -1041,7 +968,7 @@
 	</div>
 
 	<div 
-		style="font-size:14px; display:flex; height:100%; width:100%; border:solid 0px black; justify-content:center; align-items:center; "
+		style="font-size:14px; display:flex; height:100%; width:100%; justify-content:center; align-items:center; "
 	>
 		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label style="margin: 5px">Species modeled:</label>
@@ -1073,48 +1000,39 @@
 		<div id="left" class="top" style="width: 400px;">
 			<!-- ENVIRONMENT -->
 
-			<div
-				style="background-color:darkgreen; color: white; width: 100%; height: 25px; padding-top: 5px"
-			>
+			<div style="background-color:darkgreen; color: white; width: 100%; height: 25px; padding-top: 5px">
 				Environment
 			</div>
 
 			<LeftPanelCategory
 				heading="Chemical drivers"
 				headingColor="#569e3a"
-				categoryIncluded={chemicalDriversIncluded}
-			>
-				<MultiSelect options={lifeElements.map((x) => x.name)} 
+				categoryIncluded={chemicalDrivers.length > 0}>
+
+				<MultiSelect --sms-font-size="10px"
+					options={lifeElements.map((x) => x.name)} 
 					bind:selected={selectedChemicalImpacts} 
 					on:change={triggerDiagram}/>
 
 				<AddItemForm
-					questionChecked={chemicalDriversIncluded}
-					questionText="Does the model include external drivers?"
 					placeholderText="New external driver"
 					on:addItem={addDriver}
 					on:deleteItem={deleteDriver}
-					on:handleClick={() =>
-						(chemicalDriversIncluded = !chemicalDriversIncluded)}
-					items={chemicalDrivers}
-				/>
+					items={chemicalDrivers}/>
+
 			</LeftPanelCategory>
 
 			<LeftPanelCategory
 				heading="Other drivers"
 				headingColor="#569e3a"
-				categoryIncluded={otherDriversIncluded}
-			>
+				categoryIncluded={otherDrivers.length > 0}>
+
 				<AddItemForm
-					questionChecked={otherDriversIncluded}
-					questionText="Does the model include external drivers?"
 					placeholderText="New external driver"
 					on:addItem={addOtherDriver}
 					on:deleteItem={deleteOtherDriver}
-					on:handleClick={() =>
-						(otherDriversIncluded = !otherDriversIncluded)}
-					items={otherDrivers}
-				/>
+					items={otherDrivers}/>
+
 			</LeftPanelCategory>
 
 			<!-- POPULATION -->
@@ -1128,69 +1046,53 @@
 			<LeftPanelCategory
 				heading="Life history stages"
 				headingColor="#c4b018"
-				categoryIncluded={lifeHistoriesIncluded}
-			>
+				categoryIncluded={lifeHistories.length > 0}>
+
 				<AddItemForm
-					questionChecked={lifeHistoriesIncluded}
-					questionText="Does the model include any life history stages?"
 					placeholderText="New life history stage"
 					on:addItem={addLifeHistories}
 					on:deleteItem={deleteLifeHistories}
-					on:handleClick={() =>
-						(lifeHistoriesIncluded = !lifeHistoriesIncluded)}
-					items={lifeHistories}
-				/>
+					items={lifeHistories}/>
+
 			</LeftPanelCategory>
 
 			<LeftPanelCategory
 				heading="Transitions"
 				headingColor="#c4b018"
-				categoryIncluded={transitionsIncluded}
-			>
+				categoryIncluded={transitions.length > 0}>
+
 				<AddItemForm
-					questionChecked={transitionsIncluded}
-					questionText="Does the model include any transitions between stages?"
 					placeholderText="New transition"
 					on:addItem={addTransitions}
 					on:deleteItem={deleteTransitions}
-					on:handleClick={() =>
-						(transitionsIncluded = !transitionsIncluded)}
-					items={transitions}
-				/>
+					items={transitions}/>
+
 			</LeftPanelCategory>
 
 			<LeftPanelCategory
 				heading="Behaviors"
 				headingColor="#c4b018"
-				categoryIncluded={behaviorsIncluded}
-			>
+				categoryIncluded={behaviors.length > 0}>
+
 				<AddItemForm
-					questionChecked={behaviorsIncluded}
-					questionText="Does the model include any behavioral components?"
 					placeholderText="New behavioral component"
 					on:addItem={addBehaviors}
 					on:deleteItem={deleteBehaviors}
-					on:handleClick={() =>
-						(behaviorsIncluded = !behaviorsIncluded)}
-					items={behaviors}
-				/>
+					items={behaviors}/>
+
 			</LeftPanelCategory>
 
 			<LeftPanelCategory
 				heading="Energetics"
 				headingColor="#c4b018"
-				categoryIncluded={energeticsIncluded}
-			>
+				categoryIncluded={energetics.length > 0}>
+
 				<AddItemForm
-					questionChecked={energeticsIncluded}
-					questionText="Does the model include any energetics components?"
 					placeholderText="New energetics component"
 					on:addItem={addEnergetics}
 					on:deleteItem={deleteEnergetics}
-					on:handleClick={() =>
-						(energeticsIncluded = !energeticsIncluded)}
-					items={energetics}
-				/>
+					items={energetics}/>
+
 			</LeftPanelCategory>
 
 			<!-- OTHER FEATURES -->
@@ -1204,43 +1106,37 @@
 			<LeftPanelCategory
 				heading="Density dependence"
 				headingColor="#d99116"
-				categoryIncluded={dependenciesIncluded}
-			>
-				<MultiSelect options={lifeElements.map((x) => x.name)} 
+				categoryIncluded={densityDependencies.length > 0}>
+
+				<MultiSelect  --sms-font-size="10px"
+					options={lifeElements.map((x) => x.name)} 
 					bind:selected={selectedDensityImpacts} 
 					on:change={triggerDiagram}/>
 
 				<AddItemForm
-					questionChecked={dependenciesIncluded}
-					questionText="Does the model include density dependence?"
 					placeholderText="New density dependency"
 					on:addItem={addDependency}
 					on:deleteItem={deleteDependency}
-					on:handleClick={() =>
-						(dependenciesIncluded = !dependenciesIncluded)}
-					items={densityDependencies}
-				/>
+					items={densityDependencies}/>
+
 			</LeftPanelCategory>
 
 			<LeftPanelCategory
 				heading="Stochasticity"
 				headingColor="#d99116"
-				categoryIncluded={stochasticIncluded}
-			>
-				<MultiSelect options={lifeElements.map((x) => x.name)} 
+				categoryIncluded={stochasticEffects.length > 0}>
+
+				<MultiSelect  --sms-font-size="10px"
+					options={lifeElements.map((x) => x.name)} 
 					bind:selected={selectedStochasticImpacts} 
 					on:change={triggerDiagram}/>
 
 				<AddItemForm
-					questionChecked={stochasticIncluded}
-					questionText="Does the model include stochasticity?"
 					placeholderText="New stochastic element"
 					on:addItem={addStochasicity}
 					on:deleteItem={deleteStochasicity}
-					on:handleClick={() =>
-						(stochasticIncluded = !stochasticIncluded)}
-					items={stochasticEffects}
-				/>
+					items={stochasticEffects}/>
+
 			</LeftPanelCategory>
 
 			<!-- MODEL OUTPUTS -->
@@ -1254,75 +1150,60 @@
 			<LeftPanelCategory
 				heading="Abundance"
 				headingColor="#4180ad"
-				categoryIncluded={abundancesIncluded}
-			>
+				categoryIncluded={abundances.length > 0}>
+
 				<AddItemForm
-					questionChecked={abundancesIncluded}
-					questionText="Does the model include abundance outputs?"
 					placeholderText="New abundance output"
 					on:addItem={addAbundances}
 					on:deleteItem={deleteAbundances}
-					on:handleClick={() =>
-						(abundancesIncluded = !abundancesIncluded)}
-					items={abundances}
-				/>
+					items={abundances}/>
+
 			</LeftPanelCategory>
 
 			<LeftPanelCategory
 				heading="Biomass"
 				headingColor="#4180ad"
-				categoryIncluded={bioMassesIncluded}
-			>
+				categoryIncluded={bioMasses.length > 0}>
+
 				<AddItemForm
-					questionChecked={bioMassesIncluded}
-					questionText="Does the model include biomass outputs?"
 					placeholderText="New biomass output"
 					on:addItem={addBiomasses}
 					on:deleteItem={deleteBiomasses}
-					on:handleClick={() =>
-						(bioMassesIncluded = !bioMassesIncluded)}
-					items={bioMasses}
-				/>
+					items={bioMasses}/>
+
 			</LeftPanelCategory>
 
 			<LeftPanelCategory
 				heading="Structure"
 				headingColor="#4180ad"
-				categoryIncluded={structuresIncluded}
-			>
+				categoryIncluded={structures.length > 0}>
+
 				<AddItemForm
-					questionChecked={structuresIncluded}
-					questionText="Does the model include structural outputs?"
 					placeholderText="New structural output"
 					on:addItem={addStructures}
 					on:deleteItem={deleteStructures}
-					on:handleClick={() =>
-						(structuresIncluded = !structuresIncluded)}
-					items={structures}
-				/>
+					items={structures}/>
+
 			</LeftPanelCategory>
 
 			<LeftPanelCategory
 				heading="Other outputs"
 				headingColor="#4180ad"
-				categoryIncluded={othersIncluded}
-			>
+				categoryIncluded={others.length > 0}>
+
 				<AddItemForm
-					questionChecked={othersIncluded}
-					questionText="Does the model include other outputs?"
 					placeholderText="New output"
 					on:addItem={addOthers}
 					on:deleteItem={deleteOthers}
-					on:handleClick={() => (othersIncluded = !othersIncluded)}
-					items={others}
-				/>
+					items={others}/>
+					
 			</LeftPanelCategory>
 		</div>
 
 		<!-- DIAGRAM BODY -->
-		<div style="display:flex; flex-flow:column; width: 100%; ">
+		<div style="display:flex; flex-flow:column; width: 100%; font-size: 14px;">
 			<div
-				style="display:flex; height: 200px; width: 100%; align-items:stretch; "
+				style="display:flex; height: 200px; width: 100%; align-items:stretch; margin-bottom: 10px; "
 			>
 				{#each chemicalDrivers as factor (factor.id)}
 					<div
@@ -1331,7 +1212,7 @@
 					>
 						<div
 							class="background"
-							style="background-color: green; height: 140px; max-width: 120px"
+							style="background-color: green; height: 140px; max-width: 120px; margin-bottom: 5px"
 						>
 							<p
 								style="align: center; padding: 10px; color: white"
@@ -1340,9 +1221,9 @@
 							</p>
 						</div>
 						<img
-							src="images/down-arrow.svg"
+							src="images/right-arrow.png"
 							alt="Loading..."
-							style="width: 40px; fill: grey"
+							style="height: 40px; transform: rotate(90deg);"
 						/>
 					</div>
 				{/each}
@@ -1354,7 +1235,7 @@
 					>
 						<div
 							class="background"
-							style="background-color: green; height: 140px; max-width: 120px"
+							style="background-color: green; height: 140px; max-width: 120px; margin-bottom: 5px"
 						>
 							<p
 								style="align: center; padding: 10px; color: white"
@@ -1363,9 +1244,9 @@
 							</p>
 						</div>
 						<img
-							src="images/down-arrow.svg"
+							src="images/right-arrow.png"
 							alt="Loading..."
-							style="width: 40px; fill: grey"
+							style="height: 40px; transform: rotate(90deg);"
 						/>
 					</div>
 				{/each}
@@ -1377,7 +1258,7 @@
 					>
 						<div
 							class="background"
-							style="background-color: #d08008; height: 140px; max-width: 120px"
+							style="background-color: #d08008; height: 140px; max-width: 120px; margin-bottom: 5px"
 						>
 							<p
 								style="align: center; padding: 10px; color: white"
@@ -1386,9 +1267,9 @@
 							</p>
 						</div>
 						<img
-							src="images/down-arrow.svg"
+							src="images/right-arrow.png"
 							alt="Loading..."
-							style="width: 40px; fill: grey"
+							style="height: 40px; transform: rotate(90deg);"
 						/>
 					</div>
 				{/each}
@@ -1400,7 +1281,7 @@
 					>
 						<div
 							class="background"
-							style="background-color: #d08008; height: 140px; max-width: 120px"
+							style="background-color: #d08008; height: 140px; max-width: 120px; margin-bottom: 5px"
 						>
 							<p
 								style="align: center; padding: 10px; color: white"
@@ -1409,9 +1290,9 @@
 							</p>
 						</div>
 						<img
-							src="images/down-arrow.svg"
+							src="images/right-arrow.png"
 							alt="Loading..."
-							style="width: 40px; fill: grey"
+							style="height: 40px; transform: rotate(90deg);"
 						/>
 					</div>
 				{/each}
@@ -1439,14 +1320,16 @@
 						on:deleteItem={deleteDiagramElement}
 					/>
 					<div />
-					<p>Markdown Text:</p>
-					<p>{mermaidMarkdown}</p>
+				{:else if currentItem === "Markdown Text"}
+					<div style="display:flex; align-items:center; padding: 10px;  width:90%; height: 70%; background-color: white; margin: 20px; font-size: 18px">
+						<p>{mermaidMarkdown}</p>
+					</div>
 				{/if}
 			</div>
 		</div>
 
 		<!-- DIAGRAM OUTPUT -->
-		<div style="width: 300px; margin: 0px ; ">
+		<div style="width: 300px; margin: 0px ; font-size: 14px">
 			<div style="height: 200px;" />
 			{#each abundances as output (output.id)}
 				<div
@@ -1455,7 +1338,7 @@
 					<img
 						src="images/right-arrow.png"
 						alt="Loading..."
-						style="height: 40px; fill: grey"
+						style="height: 40px; "
 					/>
 					<div
 						class="background"

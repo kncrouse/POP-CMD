@@ -36,36 +36,38 @@
 <form style="align-items:center; margin:10px; justify-content:center; " >
 
     {#each diagramElements as element}
-        <div style="display:flex; height:100%; width: 100%" >
-            <p>{element.firstElement} -- {element.elementConnection} --> {element.secondElement}</p>
-            <button on:click|preventDefault={() => {handleDelete(element.id)}}>X</button>
+        <div style="display:flex; align-items:center ; width:100%; background-color:lightgoldenrodyellow; margin-top: 5px">
+            <p style="width:100%; text-align:left; padding-left: 5px;">
+                {element.firstElement} -> {element.elementConnection} -> {element.secondElement}</p>
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <span style="width:30px;" on:click|preventDefault={() => {handleDelete(element.id)}}>&minus;</span>
         </div>
     {/each}
 
-    <div style="display:flex; height:100%; ">
-        <select bind:value={firstElement} style="min-width: 200;" placeholder="Life History">
+    <div style="display:flex; height:100%; align-items:center ; background-color: lightgoldenrodyellow; margin-top: 5px; padding: 5px;">
+        <select bind:value={firstElement} style="min-width: 200; width: 100%;" placeholder="Life History">
             {#each lifehistoryElements as element}
                 <option value={element.name}>{element.name}</option>  
             {/each}
 		</select>
-        <p>--</p>
-        <select bind:value={elementConnection} style="min-width: 200;" placeholder="Function">
+        <p style="width:80px"> -> </p>
+        <select bind:value={elementConnection} style="min-width: 200; width: 100%;" placeholder="Function">
             {#each actionElements as element}
                 <option value={element.name}>{element.name}</option>  
             {/each}
             <option>    </option> ; option for blank text
 		</select>
-        <p>--></p>
-        <select bind:value={secondElement} style="min-width: 200;" placeholder="Life History">
+        <p style="width:80px"> -> </p>
+        <select bind:value={secondElement} style="min-width: 200; width: 100%;" placeholder="Life History">
             {#each lifehistoryElements as element}
                 <option value={element.name}>{element.name}</option>  
             {/each}
 		</select>
-        <button on:click|preventDefault={handleAdd} >&plus;</button>
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <span style="width:70px;"  on:click|preventDefault={handleAdd} >&plus;</span>
     </div>     
 
 </form>
-
 
 <style>
 
