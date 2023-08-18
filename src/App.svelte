@@ -376,7 +376,7 @@
 			id: Math.random(),
 		};
 
-		otherDrivers = [...otherDrivers, driver2, driver3];
+		otherDrivers = [...otherDrivers, driver2];
 
 		const depend1 = {
 			name: "Intra- and interspecific competition for light",
@@ -407,9 +407,9 @@
 			id: Math.random(),
 		};
 
-		abundances = [...abundances, output1];
+		abundances = [...abundances, output1, output3];
 		structures = [...structures, output2];
-		others = [...others, output3, output4];
+		others = [...others, output4];
 
 		const lifehistory1 = {
 			name: "Seed load",
@@ -1020,7 +1020,7 @@
 		</select>
 	</div>
 
-	<div id="parent" style="display:flex; height:100%; border:solid 1px black">
+	<div id="parent" style="display:flex; height:100%; border:solid 0px black">
 		<div id="left" class="top" style="width: 400px;">
 			<!-- ENVIRONMENT -->
 
@@ -1345,7 +1345,7 @@
 					/>
 					<div />
 				{:else if currentItem === "Markdown Text"}
-					<div style="display:flex; align-items:center; padding: 10px;  width:90%; height: 70%; background-color: white; margin: 20px; font-size: 14px">
+					<div style="display:flex; align-items:center; padding: 10px;  width:90%; height: 70%; background-color: white; margin: 20px; font-size: 18px">
 						<p>{mermaidMarkdown}</p>
 					</div>
 				{/if}
