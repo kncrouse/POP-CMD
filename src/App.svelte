@@ -361,7 +361,7 @@
 		environmentDescription = "Illinois River Floodplain";
 
 		const driver1 = {
-			name: "Chemical exposure: spatial gradient",
+			name: "Atrazine exposure; spatial gradient",
 			id: Math.random(),
 		};
 		chemicalDrivers = [...chemicalDrivers, driver1];
@@ -379,7 +379,7 @@
 		otherDrivers = [...otherDrivers, driver2, driver3];
 
 		const depend1 = {
-			name: "Intra-specific competition for light",
+			name: "Intra- and interspecific competition for light",
 			id: Math.random(),
 		};
 		densityDependencies = [...densityDependencies, depend1];
@@ -529,6 +529,24 @@
 			item6,
 			item1,
 		];
+
+		for (let i = 0; i < lifeHistories.length; i++) {
+			let lH = lifeHistories[i].name;
+			if (lH == 'Seed load') {
+				selectedStochasticImpacts = [...selectedStochasticImpacts, lH]
+			}
+			if (lH == 'Seedling') {
+				selectedChemicalImpacts = [...selectedChemicalImpacts, lH]
+				selectedDensityImpacts = [...selectedDensityImpacts, lH]
+				selectedStochasticImpacts = [...selectedStochasticImpacts, lH]
+			}
+			if (lH == 'Rosette') {
+				selectedChemicalImpacts = [...selectedChemicalImpacts, lH]
+				selectedDensityImpacts = [...selectedDensityImpacts, lH]
+				selectedStochasticImpacts = [...selectedStochasticImpacts, lH]
+			}
+
+		}
 
 		updateDiagram();
 		showNewDiagram();
@@ -874,8 +892,14 @@
 
 		];
 
+		for (let i = 0; i < lifeHistories.length; i++) {
+			let lH = lifeHistories[i].name;
+			selectedChemicalImpacts = [...selectedChemicalImpacts, lH]
+		}
+		
 		updateDiagram();
 		showNewDiagram();
+		
 	};
 
 	const triggerDiagram = () => {
@@ -1321,7 +1345,7 @@
 					/>
 					<div />
 				{:else if currentItem === "Markdown Text"}
-					<div style="display:flex; align-items:center; padding: 10px;  width:90%; height: 70%; background-color: white; margin: 20px; font-size: 18px">
+					<div style="display:flex; align-items:center; padding: 10px;  width:90%; height: 70%; background-color: white; margin: 20px; font-size: 14px">
 						<p>{mermaidMarkdown}</p>
 					</div>
 				{/if}
