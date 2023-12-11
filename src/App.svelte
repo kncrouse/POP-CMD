@@ -384,6 +384,7 @@
 	const showExample1 = () => {
 		clearAll();
 
+		spatiallyExplicit = true;
 		modelStructure = "agent-based model";
 		speciesDescription = "Boltonia decurrens";
 		environmentDescription = "Illinois River Floodplain";
@@ -955,6 +956,7 @@
 		otherDrivers = [];
 		densityDependencies = [];
 		stochasticEffects = [];
+		spatialHeterogeneities = [];
 		modelOutputs = [];
 		diagramElements = [];
 		lifeHistories = [];
@@ -1054,7 +1056,7 @@
 		</select>
 		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label style="margin: 5px">
-			Spatially explicit?
+			Spatially explicit:
 		</label>
 		<input style="margin: 10px" type="checkbox" bind:checked={spatiallyExplicit}/>
 	</div>
