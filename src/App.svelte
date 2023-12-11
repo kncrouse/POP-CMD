@@ -949,6 +949,7 @@
 	}
 
 	const clearAll = () => {
+		spatiallyExplicit = false;
 		modelStructure = "";
 		speciesDescription = "";
 		environmentDescription = "";
