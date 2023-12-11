@@ -2,8 +2,6 @@
 	import Mermaid from "./Mermaid.svelte";
 	import LeftPanelCategory from "./LeftPanelCategory.svelte";
 	import AddItemForm from "./AddItemForm.svelte";
-	import SelectItemForm from "./SelectItemForm.svelte";
-	import { each, select_options, update_await_block_branch } from "svelte/internal";
 	import Tabs from "./Tabs.svelte";
 	import DiagramElementForm from "./DiagramElementForm.svelte";
 	import MultiSelect from 'svelte-multiselect'
@@ -11,6 +9,7 @@
 	// import { tooltip } from './tooltip';
 	// import { tooltip as tooltipv1 } from './tooltip.v1';
 
+	let spatiallyExplicit = false;
 	let modelStructure;
 	let speciesDescription;
 	let environmentDescription;
@@ -18,6 +17,7 @@
 	let selectedChemicalImpacts;
 	let selectedDensityImpacts;
 	let selectedStochasticImpacts;
+	let selectedSpatialHeterogeneities;
 
 	$: actionElements = transitions;
 	$: lifeElements = behaviors.concat(lifeHistories, energetics);
@@ -32,7 +32,7 @@
 	let chemicalDrivers = [];
 	let otherDrivers = [];
 
-	// POPULATION
+	// ORGANISM
 
 	let lifeHistories = [];
 	let transitions = [];
@@ -43,6 +43,7 @@
 
 	let densityDependencies = [];
 	let stochasticEffects = [];
+	let spatialHeterogeneities = [];
 
 	// MODEL OUTPUTS
 
@@ -53,7 +54,7 @@
 
 	// TABS
 
-	let tabItems = ["Show Diagram", "Edit Diagram", "Markdown Text"];
+	let tabItems = ["Show Diagram", "Edit Diagram"]; //"Markdown Text"
 	let currentItem = "Show Diagram";
 
 	// MERMAID
@@ -83,7 +84,7 @@
 	};
 
 	function updateDiagram() {
-		mermaidMarkdown = "flowchart TD \n";
+		mermaidMarkdown = "flowchart TD \n ";
 		let styleMarkdown = ""
 
 		let alphabet = [
@@ -183,13 +184,29 @@
 				styleMarkdown += 'classDef underlined text-decoration: underline; class ' + secondLetter + ' underlined; \n'
 			}
 
-			// UPDATE ITALICS TEXT
+			// UPDATE STOCASTICITY ITALICS TEXT
 			if ( selectedStochasticImpacts.includes(first) ) {
 				styleMarkdown += 'classDef stochasticity font-style: italic; class ' + firstLetter + ' stochasticity; \n'
 			}
 			if ( selectedStochasticImpacts.includes(second) ) {
 				styleMarkdown += 'classDef stochasticity font-style: italic; class ' + secondLetter + ' stochasticity; \n'
 			}
+
+			// UPDATE SPATIAL HETEROGENEITY TEXT
+			if ( selectedSpatialHeterogeneities.includes(first) ) {
+				styleMarkdown += 'classDef heterogeneity fill: #dbc410, stroke: #d99116, stroke-width: 3px ; class ' + firstLetter + ' heterogeneity; \n'
+			} else {
+				styleMarkdown += 'classDef qwert1 fill: #dbc410, stroke: #c4b018, stroke-width: 1px ; class ' + firstLetter + ' qwert1; \n'
+			} 
+
+			if ( selectedSpatialHeterogeneities.includes(second) ) {
+				styleMarkdown += 'classDef heterogeneity fill: #dbc410, stroke: #d99116, stroke-width: 3px ; class ' + secondLetter + ' heterogeneity; \n'
+			} else {
+				styleMarkdown += 'classDef qwert fill: #dbc410, stroke: #c4b018, stroke-width: 1px ; class ' + secondLetter + ' qwert; \n'
+			} 
+
+			// STYLES FOR THE DIAGRAM BOXES
+		
 			
 			let newLine =
 				firstLetter +
@@ -235,7 +252,7 @@
 		otherDrivers = otherDrivers.filter((item) => item.id != e.detail);
 	};
 
-	// POPULATION
+	// ORGANISM
 
 	const addDiagramElement = (e) => {
 		const item = e.detail;
@@ -313,6 +330,17 @@
 		);
 	};
 
+	const addSpatialHeterogeneity = (e) => {
+		const item = e.detail;
+		spatialHeterogeneities = [...spatialHeterogeneities, item];
+	};
+
+	const deleteSpatialHeterogeneity = (e) => {
+		spatialHeterogeneities = spatialHeterogeneities.filter(
+			(item) => item.id != e.detail
+		);
+	};
+
 	// MODEL OUTPUTS
 
 	const addAbundances = (e) => {
@@ -361,7 +389,7 @@
 		environmentDescription = "Illinois River Floodplain";
 
 		const driver1 = {
-			name: "Atrazine exposure; spatial gradient",
+			name: "Atrazine exposure",
 			id: Math.random(),
 		};
 		chemicalDrivers = [...chemicalDrivers, driver1];
@@ -389,6 +417,12 @@
 			id: Math.random(),
 		};
 		stochasticEffects = [...stochasticEffects, stoch1];
+
+		const spatial1 = {
+			name: "Atrazine exposure varies spatially",
+			id: Math.random(),
+		};
+		spatialHeterogeneities = [...spatialHeterogeneities, spatial1];
 
 		const output1 = {
 			name: "Flowering plant density",
@@ -934,6 +968,7 @@
 		selectedChemicalImpacts = [];
 		selectedDensityImpacts = [];
 		selectedStochasticImpacts = [];
+		selectedSpatialHeterogeneities = [];
 		updateDiagram();
 		showNewDiagram();
 	};
@@ -963,37 +998,36 @@
 
 
 <!-- svelte-ignore non-top-level-reactive-declaration -->
-<main>
-	<h1>CONCEPTUAL MODEL DIAGRAM GENERATOR</h1>
+<main style="margin-right: 20px" >
+	<div style="padding: 10px; margin-right: 10px; background-color: #e3e3e3; height:100%; width:100%; border:solid 0px black; justify-content:center; align-items:center; ">
+		<h1>POP-CMD</h1>
+		<h5>a CONCEPTUAL MODEL DIAGRAM generator</h5>
 
-	<div
-		style="display:flex; height:100%; width:100%; border:solid 0px black; justify-content:center; align-items:center; "
-	>
-		<button
-			style="color:olivedrab; margin: 10px; border-color:lightgray"
-			on:click={showExample1}><em>Boltonia decurrens</em>
-		</button>
-		<button
-			style="color:olivedrab; margin: 10px; border-color:lightgray"
-			on:click={showExample2}>Delta Smelt</button
-		>
-		<button
-			style="color:olivedrab; margin: 10px; border-color:lightgray"
-			on:click={showExample3}>Fathead Minnow</button
-		>
-		<button
-			style="color:darkred; margin: 10px; border-color:lightgray"
-			on:click={clearAll}>Clear All</button
-		>
-		<button
-			style="color:grey; margin: 10px; border-color:lightgray"
-			on:click={generatePDF}>Generate PDF</button
-		>
+		<div style="display:flex; height:100%; width:100%; justify-content:center; align-items:center; ">
+			<button
+				style="color:olivedrab; margin: 10px; border-color:lightgray"
+				on:click={showExample1}><em>Boltonia decurrens</em>
+			</button>
+			<button
+				style="color:olivedrab; margin: 10px; border-color:lightgray"
+				on:click={showExample2}>Delta Smelt</button
+			>
+			<button
+				style="color:olivedrab; margin: 10px; border-color:lightgray"
+				on:click={showExample3}>Fathead Minnow</button
+			>
+			<button
+				style="color:darkred; margin: 10px; border-color:lightgray"
+				on:click={clearAll}>Clear All</button
+			>
+			<button
+				style="color:grey; margin: 10px; border-color:lightgray"
+				on:click={generatePDF}>Generate PDF</button
+			>
+		</div>
 	</div>
 
-	<div 
-		style="font-size:14px; display:flex; height:100%; width:100%; justify-content:center; align-items:center; "
-	>
+	<div style="font-size:14px; margin: 10px; display:flex; height:100%; width:100%; justify-content:center; align-items:center; ">
 		<!-- svelte-ignore a11y-label-has-associated-control -->
 		<label style="margin: 5px">Species modeled:</label>
 		<input
@@ -1018,6 +1052,11 @@
 			<option value="structured/matrix">structured/matrix</option>
 			<option value="agent-based model">agent-based model</option>
 		</select>
+		<!-- svelte-ignore a11y-label-has-associated-control -->
+		<label style="margin: 5px">
+			Spatially explicit?
+		</label>
+		<input style="margin: 10px" type="checkbox" bind:checked={spatiallyExplicit}/>
 	</div>
 
 	<div id="parent" style="display:flex; height:100%; border:solid 0px black">
@@ -1059,12 +1098,12 @@
 
 			</LeftPanelCategory>
 
-			<!-- POPULATION -->
+			<!-- ORGANISM -->
 
 			<div
 				style="background-color:#767b1a; color: white; width: 100%; height: 25px; padding-top: 5px"
 			>
-				Population
+				Organism
 			</div>
 
 			<LeftPanelCategory
@@ -1160,6 +1199,24 @@
 					on:addItem={addStochasicity}
 					on:deleteItem={deleteStochasicity}
 					items={stochasticEffects}/>
+
+			</LeftPanelCategory>
+
+			<LeftPanelCategory
+				heading="Spatial Heterogeneity"
+				headingColor="#d99116"
+				categoryIncluded={spatialHeterogeneities.length > 0}>
+
+				<MultiSelect  --sms-font-size="10px"
+					options={lifeElements.map((x) => x.name)} 
+					bind:selected={selectedSpatialHeterogeneities} 
+					on:change={triggerDiagram}/>
+
+				<AddItemForm
+					placeholderText="New stochastic element"
+					on:addItem={addSpatialHeterogeneity}
+					on:deleteItem={deleteSpatialHeterogeneity}
+					items={spatialHeterogeneities}/>
 
 			</LeftPanelCategory>
 
@@ -1320,6 +1377,31 @@
 						/>
 					</div>
 				{/each}
+
+				{#each spatialHeterogeneities as factor (factor.id)}
+					<div
+						class="background"
+						style="height: 100%; max-width: 120px; margin: 10px"
+					>
+						<div
+							class="background"
+							style="background-color: #d08008; height: 140px; max-width: 120px; margin-bottom: 5px"
+						>
+							<p
+								style="align: center; padding: 10px; color: white"
+							>
+								{factor.name}
+							</p>
+						</div>
+						<img
+							src="images/right-arrow.png"
+							alt="Loading..."
+							style="height: 40px; transform: rotate(90deg);"
+						/>
+					</div>
+				{/each}
+
+				
 			</div>
 
 			<div
@@ -1345,7 +1427,7 @@
 					/>
 					<div />
 				{:else if currentItem === "Markdown Text"}
-					<div style="display:flex; align-items:center; padding: 10px;  width:90%; height: 70%; background-color: white; margin: 20px; font-size: 18px">
+					<div style="display:flex; align-items:center; padding: 10px;  width:90%; height: 70%; background-color: white; margin: 20px; font-size: 10px">
 						<p>{mermaidMarkdown}</p>
 					</div>
 				{/if}
@@ -1438,7 +1520,6 @@
 		</div>
 	</div>
 
-	<h5>© 2022 Regents of the University of Minnesota. All rights reserved.</h5>
 </main>
 
 <style>
@@ -1450,16 +1531,21 @@
 	}
 
 	h1 {
-		color: black;
+		color: rgb(91, 91, 91);
 		text-transform: uppercase;
-		font-size: 2em;
-		font-weight: 100;
+		font-size: 4em;
+		font-weight: 2;
+		padding: 0px;
+		margin: 0px;
+		margin-top:10px;
 	}
 
 	h5 {
-		color: black;
-		font-size: 24;
+		color:grey;
+		font-size: 1em;
 		font-weight: 14;
+		margin: 0px;	
+		margin-bottom: 30px;
 	}
 
 	@media (min-width: 640px) {
