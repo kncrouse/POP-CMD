@@ -1523,6 +1523,8 @@
 		</div>
 	</div>
 
+	<h6>© 2023 Kristin Crouse </h6>
+
 </main>
 
 <style>
@@ -1549,6 +1551,13 @@
 		font-weight: 14;
 		margin: 0px;	
 		margin-bottom: 30px;
+	}
+
+	h6 {
+		color:grey;
+		font-size: 24;
+		font-weight: 14;
+		margin-top: 30px;	
 	}
 
 	@media (min-width: 640px) {
