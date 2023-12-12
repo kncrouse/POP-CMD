@@ -574,11 +574,13 @@
 				selectedChemicalImpacts = [...selectedChemicalImpacts, lH]
 				selectedDensityImpacts = [...selectedDensityImpacts, lH]
 				selectedStochasticImpacts = [...selectedStochasticImpacts, lH]
+				selectedSpatialHeterogeneities = [...selectedSpatialHeterogeneities, lH]
 			}
 			if (lH == 'Rosette') {
 				selectedChemicalImpacts = [...selectedChemicalImpacts, lH]
 				selectedDensityImpacts = [...selectedDensityImpacts, lH]
 				selectedStochasticImpacts = [...selectedStochasticImpacts, lH]
+				selectedSpatialHeterogeneities = [...selectedSpatialHeterogeneities, lH]
 			}
 
 		}
@@ -590,7 +592,8 @@
 	const showExample2 = () => {
 		clearAll();
 
-		modelStructure = "agent-based model";
+		spatiallyExplicit = true;
+		modelStructure = "conceptual only";
 		speciesDescription = "Hypomesus transpacificus";
 		environmentDescription = "Sacramento–San Joaquin Estuary";
 
@@ -609,7 +612,7 @@
 			id: Math.random(),
 		};
 		const driver3 = {
-			name: "Abundance of prey",
+			name: "Abundance of prey affected by chlorpyrifos",
 			id: Math.random(),
 		};
 		const driver4 = {
@@ -629,6 +632,17 @@
 			id: Math.random(),
 		};
 		stochasticEffects = [...stochasticEffects, stoch1];
+
+		const spatial1 = {
+			name: "Habitat suitability",
+			id: Math.random(),
+		};
+
+		const spatial2 = {
+			name: "Migration varies spatially",
+			id: Math.random(),
+		};
+		spatialHeterogeneities = [...spatialHeterogeneities, spatial1, spatial2];
 
 		const output1 = {
 			name: "Population abundance",
@@ -764,6 +778,11 @@
 			item8,
 		];
 
+		for (let i = 0; i < lifeHistories.length; i++) {
+			let lH = lifeHistories[i].name;
+			selectedChemicalImpacts = [...selectedChemicalImpacts, lH]
+		}
+
 		updateDiagram();
 		showNewDiagram();
 	};
@@ -771,7 +790,7 @@
 	const showExample3 = () => {
 		clearAll();
 
-		modelStructure = "agent-based model";
+		modelStructure = "conceptual only";
 		speciesDescription = "Pimephales promelas";
 		environmentDescription = "North America";
 
@@ -1081,7 +1100,7 @@
 					on:change={triggerDiagram}/>
 
 				<AddItemForm
-					placeholderText="New external driver"
+					placeholderText="New chemical driver"
 					on:addItem={addDriver}
 					on:deleteItem={deleteDriver}
 					items={chemicalDrivers}/>
@@ -1128,7 +1147,7 @@
 				categoryIncluded={transitions.length > 0}>
 
 				<AddItemForm
-					placeholderText="New transition"
+					placeholderText="New transition component"
 					on:addItem={addTransitions}
 					on:deleteItem={deleteTransitions}
 					items={transitions}/>
@@ -1180,7 +1199,7 @@
 					on:change={triggerDiagram}/>
 
 				<AddItemForm
-					placeholderText="New density dependency"
+					placeholderText="New density dependence component"
 					on:addItem={addDependency}
 					on:deleteItem={deleteDependency}
 					items={densityDependencies}/>
@@ -1198,7 +1217,7 @@
 					on:change={triggerDiagram}/>
 
 				<AddItemForm
-					placeholderText="New stochastic element"
+					placeholderText="New stochasticity component"
 					on:addItem={addStochasicity}
 					on:deleteItem={deleteStochasicity}
 					items={stochasticEffects}/>
@@ -1206,7 +1225,7 @@
 			</LeftPanelCategory>
 
 			<LeftPanelCategory
-				heading="Spatial Heterogeneity"
+				heading="Spatial heterogeneity"
 				headingColor="#d99116"
 				categoryIncluded={spatialHeterogeneities.length > 0}>
 
@@ -1216,7 +1235,7 @@
 					on:change={triggerDiagram}/>
 
 				<AddItemForm
-					placeholderText="New stochastic element"
+					placeholderText="New spatially heterogeneous component"
 					on:addItem={addSpatialHeterogeneity}
 					on:deleteItem={deleteSpatialHeterogeneity}
 					items={spatialHeterogeneities}/>
