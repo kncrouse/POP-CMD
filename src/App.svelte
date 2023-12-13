@@ -1028,7 +1028,7 @@
 		<div style="display:flex; height:100%; width:100%; justify-content:center; align-items:center; ">
 			<button
 				style="color:olivedrab; margin: 10px; border-color:lightgray"
-				on:click={showExample1}><em>Boltonia decurrens</em>
+				on:click={showExample1}>Decurrent False Aster
 			</button>
 			<button
 				style="color:olivedrab; margin: 10px; border-color:lightgray"
