@@ -634,7 +634,7 @@
 		stochasticEffects = [...stochasticEffects, stoch1];
 
 		const spatial1 = {
-			name: "Habitat suitability",
+			name: "Habitat suitability varies spatially",
 			id: Math.random(),
 		};
 
@@ -781,6 +781,9 @@
 		for (let i = 0; i < lifeHistories.length; i++) {
 			let lH = lifeHistories[i].name;
 			selectedChemicalImpacts = [...selectedChemicalImpacts, lH]
+			if (lH == 'Adult') {
+				selectedDensityImpacts = [...selectedDensityImpacts, lH]
+			}
 		}
 
 		updateDiagram();
