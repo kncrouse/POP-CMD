@@ -1026,6 +1026,8 @@
 		<h5>a CONCEPTUAL MODEL DIAGRAM generator</h5>
 
 		<div style="display:flex; height:100%; width:100%; justify-content:center; align-items:center; ">
+			<button style="color:teal; margin: 10px; border-color:lightgray">User Manual
+			</button>
 			<button
 				style="color:olivedrab; margin: 10px; border-color:lightgray"
 				on:click={showExample1}>Decurrent False Aster
@@ -1513,7 +1515,7 @@
 						style="background-color: #3653be; width: 100%"
 					>
 						<p style="font-size: 8;">Structure</p>
-						<p style="align: center; color: white">
+						<p style="align: center; color: white;">
 							{output.name}
 						</p>
 					</div>
