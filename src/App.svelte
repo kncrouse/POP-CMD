@@ -1017,10 +1017,11 @@
 
 	}
 
+	async function goToManual() {
+		window.open("https://docs.google.com/document/d/14-ZDQqT_vu7JfYIASrTSICt7VNGvWaSrmCsSlPAWslI/edit?usp=sharing","_newtab")
+	}
+
 </script>
-
-
-
 
 <!-- svelte-ignore non-top-level-reactive-declaration -->
 <main style="margin-right: 20px" >
@@ -1029,7 +1030,9 @@
 		<h5>a CONCEPTUAL MODEL DIAGRAM generator</h5>
 
 		<div style="display:flex; height:100%; width:100%; justify-content:center; align-items:center; ">
-			<button style="color:teal; margin: 10px; border-color:lightgray">User Manual
+			<button 
+				style="color:teal; margin: 10px; border-color:lightgray" 
+				on:click={goToManual}>User Manual
 			</button>
 			<button
 				style="color:olivedrab; margin: 10px; border-color:lightgray"
